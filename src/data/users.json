@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "id": "66529764-28d7-46a7-aa75-f8c2ea795840",
+      "email": "mail@mail.com",
+      "password": "$2a$10$8K7dVFSSjEqLYoX3mlLtyOjTZ70Jw/TwsWTlOnzfD/K3S.Y.kkRpK",
+      "name": "mic zx",
+      "number": "7071612636",
+      "usertype": [
+        "Student",
+        "Entrepreneur"
+      ],
+      "industry": "Education",
+      "purpose": [
+        "Learning",
+        "Research",
+        "Business"
+      ],
+      "role": "Individual"
+    },
+    {
+      "id": "c1041e9a-8aa2-47b1-a0e5-f042a0ce6350",
+      "email": "gmail@mail.com",
+      "password": "$2a$10$xPWB9HM9aUp4S2zIUAX0Iu6jkLeIQRqVCO.jiInzJNrgt0cAIjSce",
+      "name": "Alas lasa",
+      "number": "1234567890",
+      "usertype": [
+        "Employee",
+        "Student"
+      ],
+      "industry": "Education",
+      "purpose": [
+        "Learning",
+        "Personal",
+        "Research"
+      ],
+      "role": "Individual"
+    }
+  ]
+}

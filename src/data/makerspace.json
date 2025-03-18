@@ -1,0 +1,181 @@
+{
+  "makerspaces": [
+    {
+      "id": "2",
+      "type": "Community Makerspace",
+      "usage": [
+        "rent",
+        "membership"
+      ],
+      "name": "TechHub Makerspace",
+      "description": "A fully equipped makerspace for all your creative needs",
+      "email": "info@techhub.com",
+      "number": "+1234567890",
+      "inChargeName": "Michael Johnson",
+      "websiteLink": "https://techhub-makerspace.com",
+      "timings": {
+        "monday": "9:00 AM - 8:00 PM",
+        "tuesday": "9:00 AM - 8:00 PM",
+        "wednesday": "9:00 AM - 8:00 PM",
+        "thursday": "9:00 AM - 8:00 PM",
+        "friday": "9:00 AM - 6:00 PM",
+        "saturday": "10:00 AM - 5:00 PM",
+        "sunday": "Closed"
+      },
+      "city": "Delhi",
+      "state": "NY",
+      "address": "123 Maker Street",
+      "zipcode": "10001",
+      "country": "USA",
+      "organizationName": "TechHub Inc",
+      "organizationEmail": "corporate@techhub.com",
+      "imageLinks": [
+        "/assetlist.png",
+        "/assetlist.png",
+        "/assetlist.png"
+      ],
+      "logoImageLinks": [
+        "/logo.svg",
+        "/logo.svg"
+      ],
+      "googleMapLink": "https://maps.google.com/?q=TechHub+Makerspace",
+      "howToReach": [
+        "Located 2 blocks from Central Station",
+        "Take exit 3 and walk north",
+        "Look for the blue building with TechHub logo"
+      ],
+      "amenities": [
+        "Free Parking",
+        "WiFi",
+        "Coffee Shop",
+        "Storage Lockers"
+      ],
+      "mentors": [
+        {
+          "name": "Sarah Wilson",
+          "designation": "3D Printing Expert",
+          "linkedin": "https://linkedin.com/in/sarahwilson",
+          "image": "/assetlist.png"
+        },
+        {
+          "name": "David Chen",
+          "designation": "CNC Specialist",
+          "linkedin": "https://linkedin.com/in/davidchen",
+          "image": "/assetlist.png"
+        }
+      ],
+      "instructions": "1. Register online to book a slot. 2. Bring your own materials or purchase from our shop. 3. Follow safety guidelines while using equipment. 4. Clean up after use and return tools to their places.",
+      "additionalInformation": "We offer workshops and classes on various topics. Check our website for the schedule.",
+      "rating": 4.5,
+      "status": "active"
+    },
+    {
+      "id": "1",
+      "type": "Community Makerspace",
+      "usage": [
+        "rent",
+        "membership"
+      ],
+      "name": "Techno Makerspace",
+      "description": "A fully equipped makerspace for all your creative needs",
+      "email": "info@techhub.com",
+      "number": "+1234567890",
+      "inChargeName": "Michael Johnson",
+      "websiteLink": "https://techhub-makerspace.com",
+      "timings": {
+        "monday": "9:00 AM - 8:00 PM",
+        "tuesday": "9:00 AM - 8:00 PM",
+        "wednesday": "9:00 AM - 8:00 PM",
+        "thursday": "9:00 AM - 8:00 PM",
+        "friday": "9:00 AM - 6:00 PM",
+        "saturday": "10:00 AM - 5:00 PM",
+        "sunday": "Closed"
+      },
+      "city": "Delhi",
+      "state": "NY",
+      "address": "123 Maker Street",
+      "zipcode": "10001",
+      "country": "USA",
+      "organizationName": "TechHub Inc",
+      "organizationEmail": "corporate@techhub.com",
+      "imageLinks": [
+        "https://example.com/images/space1.jpg",
+        "https://example.com/images/space2.jpg",
+        "https://example.com/images/space3.jpg"
+      ],
+      "logoImageLinks": [
+        "https://example.com/images/techhub-logo-dark.png",
+        "https://example.com/images/techhub-logo-light.png"
+      ],
+      "googleMapLink": "https://maps.google.com/?q=TechHub+Makerspace",
+      "howToReach": [
+        "Located 2 blocks from Central Station",
+        "Take exit 3 and walk north",
+        "Look for the blue building with TechHub logo"
+      ],
+      "amenities": [
+        "Free Parking",
+        "WiFi",
+        "Coffee Shop",
+        "Storage Lockers"
+      ],
+      "mentors": [
+        {
+          "name": "Sarah Wilson",
+          "designation": "3D Printing Expert",
+          "linkedin": "https://linkedin.com/in/sarahwilson",
+          "image": "https://example.com/images/sarah.jpg"
+        },
+        {
+          "name": "David Chen",
+          "designation": "CNC Specialist",
+          "linkedin": "https://linkedin.com/in/davidchen",
+          "image": "https://example.com/images/david.jpg"
+        }
+      ],
+      "instructions": "1. Register online to book a slot. 2. Bring your own materials or purchase from our shop. 3. Follow safety guidelines while using equipment. 4. Clean up after use and return tools to their places.",
+      "additionalInformation": "We offer workshops and classes on various topics. Check our website for the schedule.",
+      "rating": 4.5,
+      "status": "active"
+    },
+    {
+      "id": "4e8c7b76-5b79-4835-8982-e4de89084ab6",
+      "type": "Community Makerspace",
+      "usage": [
+        "rent",
+        "membership"
+      ],
+      "name": "Innovate Makerspace",
+      "email": "alaska@gmail.com",
+      "number": "+9876543210",
+      "inChargeName": "Jane Doe",
+      "websiteLink": "https://innovate-makerspace.com",
+      "timings": {
+        "monday": "8:00 AM - 7:00 PM",
+        "tuesday": "8:00 AM - 7:00 PM",
+        "wednesday": "8:00 AM - 7:00 PM",
+        "thursday": "8:00 AM - 7:00 PM",
+        "friday": "8:00 AM - 5:00 PM",
+        "saturday": "9:00 AM - 4:00 PM",
+        "sunday": "Closed"
+      },
+      "city": "Delhi",
+      "state": "NY",
+      "address": "456 Innovation Drive",
+      "zipcode": "10002",
+      "country": "USA",
+      "organizationName": "Innovate Inc",
+      "organizationEmail": "info@innovate.com",
+      "imageLinks": [
+        "/innovate1.png",
+        "/innovate2.png",
+        "/innovate3.png"
+      ],
+      "logoImageLinks": [
+        "/logo1.svg",
+        "/logo2.svg"
+      ],
+      "status": "inactive"
+    }
+  ]
+}

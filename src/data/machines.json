@@ -1,0 +1,56 @@
+{
+  "machines": [
+    {
+      "id": "8bc33fcb-7b31-4241-a9ab-4e701ec84548",
+      "category": "CNC Machine",
+      "brand": "XYZ Corp",
+      "model": "CNC-1234",
+      "price": 150,
+      "time": {
+        "start": "9:00 AM",
+        "end": "5:00 PM"
+      },
+      "imageLinks": [
+        "/assetlist.png"
+      ],
+      "description": "A high-precision CNC machine suitable for various manufacturing tasks.",
+      "location": "Ground floor, Building C, ASMR College",
+      "instruction": "Ensure proper safety measures are followed.",
+      "inCharge": [
+        {
+          "name": "Alice Johnson",
+          "number": "+1234567890"
+        }
+      ],
+      "makerSpace": "TechHub Makerspace",
+      "status": "inactive",
+      "rating": 4.5
+    },
+    {
+      "id": "4b1fc245-eedf-4786-9d11-571b108e504c",
+      "category": "3D Printer",
+      "brand": "MakerBot",
+      "model": "Replicator+",
+      "price": 2500,
+      "time": {
+        "start": "8:00 AM",
+        "end": "6:00 PM"
+      },
+      "imageLinks": [
+        "/assetlist.png"
+      ],
+      "description": "A versatile 3D printer capable of printing with various materials.",
+      "location": "1st floor, Building D, ASMR College",
+      "instruction": "Follow the user manual for setup and operation.",
+      "inCharge": [
+        {
+          "name": "Bob Smith",
+          "number": "+0987654321"
+        }
+      ],
+      "makerSpace": "TechHub Makerspace",
+      "status": "active",
+      "rating": 4.5
+    }
+  ]
+}

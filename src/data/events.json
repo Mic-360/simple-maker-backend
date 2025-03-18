@@ -1,0 +1,34 @@
+{
+  "events": [
+    {
+      "id": "1ba81d9c-59a0-4f6b-b6b7-ba296a9e8275",
+      "name": "3D Printing Workshop",
+      "category": "Workshop",
+      "date": {
+        "start": "2025-03-15",
+        "end": "2025-03-16"
+      },
+      "time": {
+        "start": "10:00 AM",
+        "end": "2:00 PM"
+      },
+      "ticket": {
+        "type": "Paid",
+        "price": 50
+      },
+      "ticketLimit": 4,
+      "imageLinks": ["/assetlist.png"],
+      "description": "Join us for a hands-on workshop where you will learn the basics of 3D printing. No prior experience is necessary!",
+      "agenda": "some thing important",
+      "location": "3rd flor building A ASMR college",
+      "experts": [
+        {
+          "name": "John Doe",
+          "number": "+1234567890"
+        }
+      ],
+      "makerSpace": "TechHub Makerspace",
+      "status": "active"
+    }
+  ]
+}
