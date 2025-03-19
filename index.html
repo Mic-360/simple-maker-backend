@@ -1,78 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Makerspace Onboarding</title>
-    <style>
-        body {
-            background-color: black;
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Makerspace Onboarding</title>
+        <style>
+            :root {
+                --primary-color: #6366f1;
+                --bg-color: #0f172a;
+                --text-color: #f8fafc;
+                --input-bg: #1e293b;
+            }
 
-        #container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            border: 1px solid white;
-        }
+            body {
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                min-height: 100vh;
+                margin: 0;
+                display: grid;
+                place-items: center;
+            }
 
-        input[type="email"] {
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 5px;
-            color: black;
-        }
+            #container {
+                background: rgba(255, 255, 255, 0.03);
+                backdrop-filter: blur(10px);
+                border-radius: 16px;
+                padding: 2.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                width: 90%;
+                max-width: 580px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
 
-        button {
-            padding: 10px 20px;
-            background-color: white;
-            color: black;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
+            h1 {
+                margin: 0 0 1.5rem 0;
+                font-size: 2.875rem;
+                font-weight: 600;
+                text-align: center;
+                background: linear-gradient(to right, #818cf8, #6366f1);
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
 
-        #linkDisplay {
-            margin-top: 20px;
-        }
+            input[type="email"],
+            input[type="text"] {
+                width: 90%;
+                padding: 0.75rem 1rem;
+                margin: 0.5rem 0;
+                background-color: var(--input-bg);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                color: var(--text-color);
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
 
-        #linkDisplay input[type="text"] {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            width: 300px;
-            color: black;
-        }
+            input[type="email"]:focus,
+            input[type="text"]:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            }
 
-        #linkDisplay button {
-            margin-left: 10px;
-        }
-    </style>
-</head>
+            button {
+                padding: 0.75rem 1.5rem;
+                background-color: var(--primary-color);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin: 1rem 0;
+            }
 
-<body>
-    <div id="container">
-        <h1>Makerspace Onboarding</h1>
-        <input type="email" id="emailInput" placeholder="Enter your email" required>
-        <button onclick="generateLink()">Generate Link</button>
+            button:hover {
+                background-color: #4f46e5;
+                transform: translateY(-1px);
+            }
 
-        <div id="linkDisplay" style="display:none;">
-            <input type="text" id="onboardingLink" readonly>
-            <button onclick="copyLink()">Copy Link</button>
+            #linkDisplay {
+                margin-top: 1.5rem;
+                padding-top: 1.5rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .copy-button {
+                background-color: var(--input-bg);
+                color: var(--text-color);
+            }
+
+            .copy-button:hover {
+                background-color: #2d3748;
+            }
+
+            @media (max-width: 480px) {
+                #container {
+                    padding: 1.5rem;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="container">
+            <h1>Makerspace Onboarding</h1>
+            <input type="email" id="emailInput" placeholder="Enter your email address" required>
+
+            <div id="linkDisplay" style="display:none;">
+                <input type="text" id="onboardingLink" readonly>
+                <button onclick="copyLink()" class="copy-button">
+                    Copy to Clipboard
+                </button>
+            </div>
+            <button onclick="generateLink()">Generate Onboarding Link</button>
         </div>
-    </div>
 
     <script>
         async function generateLink() {
