@@ -1,23 +1,10 @@
 const express = require('express');
-const fs = require('fs').promises;
-const path = require('path');
 const verifyToken = require('../middleware/auth');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const router = express.Router();
-const makerspaceFilePath = path.join(__dirname, '../data/makerspace.json');
-
-// Helper function to read makerspace file
-async function readMakerspaceFile() {
-  const data = await fs.readFile(makerspaceFilePath, 'utf8');
-  return JSON.parse(data);
-}
-
-// Helper function to write to makerspace file
-async function writeMakerspaceFile(data) {
-  await fs.writeFile(makerspaceFilePath, JSON.stringify(data, null, 2));
-}
 
 // Check email and create makerspace with JWT onboarding token
 router.post('/onboard', async (req, res) => {
@@ -28,10 +15,12 @@ router.post('/onboard', async (req, res) => {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    const makerspaceData = await readMakerspaceFile();
-
     // Check if makerspace with same email already exists
-    if (makerspaceData.makerspaces.some((m) => m.email === email)) {
+    const existingMakerspace = await mongoose.connection.db
+      .collection('test')
+      .findOne({ email });
+
+    if (existingMakerspace) {
       return res
         .status(400)
         .json({ message: 'Makerspace with this email already exists' });
@@ -49,14 +38,44 @@ router.post('/onboard', async (req, res) => {
       status: 'pending',
     };
 
-    // Add to makerspaces array
-    makerspaceData.makerspaces.push(newMakerspace);
-    await writeMakerspaceFile(makerspaceData);
-
+    await mongoose.connection.db.collection('test').insertOne(newMakerspace);
     res.status(201).json({ token });
   } catch (error) {
     console.error('Check email error:', error);
     res.status(500).json({ message: 'Error checking email' });
+  }
+});
+
+
+// Verify makerspace token
+router.get('/verify/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    if (!token) {
+      return res.status(400).json({ message: 'Token is required' });
+    }
+
+    // Find makerspace with the provided token
+    const makerspace = await mongoose.connection.db
+      .collection('test')
+      .findOne({ token });
+
+    if (!makerspace) {
+      return res.status(404).json({
+        message: 'Invalid token or makerspace not found',
+        isValid: false,
+      });
+    }
+
+    res.json({
+      message: 'Token verified successfully',
+      isValid: true,
+      email: makerspace.email,
+    });
+  } catch (error) {
+    console.error('Token verification error:', error);
+    res.status(500).json({ message: 'Error verifying token' });
   }
 });
 
@@ -86,19 +105,16 @@ router.post('/', verifyToken, async (req, res) => {
     // Email from the JWT token (added by verifyToken middleware)
     const tokenEmail = req.user.email;
 
-    const makerspaceData = await readMakerspaceFile();
-
     // Find pending makerspace with matching email
-    const existingMakerspaceIndex = makerspaceData.makerspaces.findIndex(
-      (m) => m.email === tokenEmail && m.status === 'pending'
-    );
+    const existingMakerspace = await mongoose.connection.db
+      .collection('test')
+      .findOne({ email: tokenEmail, status: 'pending' });
 
-    if (existingMakerspaceIndex === -1) {
+    if (!existingMakerspace) {
       return res
         .status(400)
         .json({ message: 'No pending makerspace registration found' });
     }
-
 
     // Validate required fields
     const requiredFields = [
@@ -185,8 +201,9 @@ router.post('/', verifyToken, async (req, res) => {
     };
 
     // Replace the existing pending makerspace
-    makerspaceData.makerspaces[existingMakerspaceIndex] = newMakerspace;
-    await writeMakerspaceFile(makerspaceData);
+    await mongoose.connection.db
+      .collection('test')
+      .findOneAndReplace({ email: tokenEmail }, newMakerspace);
 
     res.status(201).json(newMakerspace);
   } catch (error) {
@@ -201,24 +218,19 @@ router.put('/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    const makerspaceData = await readMakerspaceFile();
-    const makerspaceIndex = makerspaceData.makerspaces.findIndex(
-      (m) => m.id === id
-    );
+    const result = await mongoose.connection.db
+      .collection('test')
+      .findOneAndUpdate(
+        { id },
+        { $set: { ...updateData, id } },
+        { returnDocument: 'after' }
+      );
 
-    if (makerspaceIndex === -1) {
+    if (!result.value) {
       return res.status(404).json({ message: 'Makerspace not found' });
     }
 
-    // Update makerspace data
-    makerspaceData.makerspaces[makerspaceIndex] = {
-      ...makerspaceData.makerspaces[makerspaceIndex],
-      ...updateData,
-      id, // Ensure ID remains unchanged
-    };
-
-    await writeMakerspaceFile(makerspaceData);
-    res.json(makerspaceData.makerspaces[makerspaceIndex]);
+    res.json(result.value);
   } catch (error) {
     console.error('Update makerspace error:', error);
     res.status(500).json({ message: 'Error updating makerspace' });
@@ -229,11 +241,10 @@ router.put('/:id', verifyToken, async (req, res) => {
 router.get('/by-name/:name', async (req, res) => {
   try {
     const { name } = req.params;
-    const makerspaceData = await readMakerspaceFile();
 
-    const makerspace = makerspaceData.makerspaces.find(
-      (m) => m.name.toLowerCase() === name.toLowerCase()
-    );
+    const makerspace = await mongoose.connection.db
+      .collection('test')
+      .findOne({ name: new RegExp(name, 'i') });
 
     if (!makerspace) {
       return res.status(404).json({ message: 'Makerspace not found' });
@@ -250,9 +261,10 @@ router.get('/by-name/:name', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const makerspaceData = await readMakerspaceFile();
 
-    const makerspace = makerspaceData.makerspaces.find((m) => m.id === id);
+    const makerspace = await mongoose.connection.db
+      .collection('test')
+      .findOne({ id });
 
     if (!makerspace) {
       return res.status(404).json({ message: 'Makerspace not found' });
@@ -269,11 +281,12 @@ router.get('/:id', async (req, res) => {
 router.get('/by-city/:city', async (req, res) => {
   try {
     const { city } = req.params;
-    const makerspaceData = await readMakerspaceFile();
 
-    const makerspaces = makerspaceData.makerspaces
-      .filter((m) => m.city.toLowerCase() === city.toLowerCase())
-      .map((m) => m.name);
+    const makerspaces = await mongoose.connection.db
+      .collection('test')
+      .find({ city: new RegExp(city, 'i') })
+      .project({ name: 1, _id: 0 })
+      .toArray();
 
     if (makerspaces.length === 0) {
       return res
@@ -281,7 +294,7 @@ router.get('/by-city/:city', async (req, res) => {
         .json({ message: 'No makerspaces found in this city' });
     }
 
-    res.json(makerspaces);
+    res.json(makerspaces.map((m) => m.name));
   } catch (error) {
     console.error('Get makerspaces by city error:', error);
     res.status(500).json({ message: 'Error retrieving makerspaces' });

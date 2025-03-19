@@ -1,40 +1,24 @@
 const express = require('express');
-const fs = require('fs').promises;
-const path = require('path');
 const verifyToken = require('../middleware/auth');
 const { v4: uuidv4 } = require('uuid');
+const mongoose = require('mongoose');
 
 const router = express.Router();
-const machinesFilePath = path.join(__dirname, '../data/machines.json');
-
-// Helper function to read machines file
-async function readMachinesFile() {
-  const data = await fs.readFile(machinesFilePath, 'utf8');
-  return JSON.parse(data);
-}
-
-// Helper function to write to machines file
-async function writeMachinesFile(data) {
-  await fs.writeFile(machinesFilePath, JSON.stringify(data, null, 2));
-}
 
 // Get machines by makerspace name
 router.get('/by-makerspace/:makerSpace', async (req, res) => {
   try {
     const { makerSpace } = req.params;
-    const machinesData = await readMachinesFile();
 
-    const filteredMachines = machinesData.machines.filter(
-      (machine) => machine.makerSpace.toLowerCase() === makerSpace.toLowerCase()
-    );
+    const machines = await mongoose.connection.db.collection('mac')
+      .find({ makerSpace: new RegExp(makerSpace, 'i') })
+      .toArray();
 
-    if (filteredMachines.length === 0) {
-      return res
-        .status(404)
-        .json({ message: 'No machines found in this makerspace' });
+    if (machines.length === 0) {
+      return res.status(404).json({ message: 'No machines found in this makerspace' });
     }
 
-    res.json(filteredMachines);
+    res.json(machines);
   } catch (error) {
     console.error('Get machines by makerspace error:', error);
     res.status(500).json({ message: 'Error finding machines' });
@@ -50,20 +34,19 @@ router.post('/by-makerspaces', async (req, res) => {
       return res.status(400).json({ message: 'makerSpaces must be an array' });
     }
 
-    const machinesData = await readMachinesFile();
-    const normalizedMakerSpaces = makerSpaces.map((name) => name.toLowerCase());
+    const machines = await mongoose.connection.db.collection('mac')
+      .find({
+        makerSpace: {
+          $in: makerSpaces.map(name => new RegExp(name, 'i'))
+        }
+      })
+      .toArray();
 
-    const filteredMachines = machinesData.machines.filter((machine) =>
-      normalizedMakerSpaces.includes(machine.makerSpace.toLowerCase())
-    );
-
-    if (filteredMachines.length === 0) {
-      return res
-        .status(404)
-        .json({ message: 'No machines found in these makerspaces' });
+    if (machines.length === 0) {
+      return res.status(404).json({ message: 'No machines found in these makerspaces' });
     }
 
-    res.json(filteredMachines);
+    res.json(machines);
   } catch (error) {
     console.error('Get machines by makerspaces error:', error);
     res.status(500).json({ message: 'Error finding machines' });
@@ -106,8 +89,6 @@ router.post('/', verifyToken, async (req, res) => {
       });
     }
 
-    const machinesData = await readMachinesFile();
-
     const newMachine = {
       id: uuidv4(),
       category,
@@ -121,13 +102,11 @@ router.post('/', verifyToken, async (req, res) => {
       instruction: instruction || null,
       inCharge: inCharge || [],
       makerSpace,
-      status: 'inactive', // Default status as specified
-      rating: 4.5, // Initial rating
+      status: 'inactive',
+      rating: 4.5,
     };
 
-    machinesData.machines.push(newMachine);
-    await writeMachinesFile(machinesData);
-
+    await mongoose.connection.db.collection('mac').insertOne(newMachine);
     res.status(201).json(newMachine);
   } catch (error) {
     console.error('Create machine error:', error);
@@ -141,22 +120,18 @@ router.put('/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    const machinesData = await readMachinesFile();
-    const machineIndex = machinesData.machines.findIndex((m) => m.id === id);
+    const result = await mongoose.connection.db.collection('mac')
+      .findOneAndUpdate(
+        { id },
+        { $set: { ...updateData, id } },
+        { returnDocument: 'after' }
+      );
 
-    if (machineIndex === -1) {
+    if (!result.value) {
       return res.status(404).json({ message: 'Machine not found' });
     }
 
-    // Update machine data
-    machinesData.machines[machineIndex] = {
-      ...machinesData.machines[machineIndex],
-      ...updateData,
-      id, // Ensure ID remains unchanged
-    };
-
-    await writeMachinesFile(machinesData);
-    res.json(machinesData.machines[machineIndex]);
+    res.json(result.value);
   } catch (error) {
     console.error('Update machine error:', error);
     res.status(500).json({ message: 'Error updating machine' });
