@@ -10,7 +10,7 @@
         "Student",
         "Entrepreneur"
       ],
-      "industry": "Education",
+      "industry": ["Education"],
       "purpose": [
         "Learning",
         "Research",
@@ -28,7 +28,7 @@
         "Employee",
         "Student"
       ],
-      "industry": "Education",
+      "industry": ["Education"],
       "purpose": [
         "Learning",
         "Personal",
