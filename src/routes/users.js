@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
 // Signup route
 router.post('/signup', async (req, res) => {
   try {
-    const { email, password, name, number, usertype, industry, purpose, role } =
+    const { email, password, name, number, usertype, industry, purpose } =
       req.body;
 
     // Validate required fields
@@ -31,7 +31,7 @@ router.post('/signup', async (req, res) => {
 
     // Check if user already exists
     const existingUser = await mongoose.connection.db
-      .collection('user')
+      .collection('users')
       .findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
@@ -42,7 +42,6 @@ router.post('/signup', async (req, res) => {
 
     // Create new user
     const newUser = {
-      id: uuidv4(),
       email,
       password: hashedPassword,
       name,
@@ -53,7 +52,7 @@ router.post('/signup', async (req, res) => {
       role: 'Individual', // default role
     };
 
-    await mongoose.connection.db.collection('user').insertOne(newUser);
+    await mongoose.connection.db.collection('users').insertOne(newUser);
 
     // Generate token
     const token = jwt.sign(

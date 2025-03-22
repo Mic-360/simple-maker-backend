@@ -9,16 +9,16 @@ const router = express.Router();
 // Check email and create makerspace with JWT onboarding token
 router.post('/onboard', async (req, res) => {
   try {
-    const { email } = req.body;
+    const { vendormail } = req.body;
 
-    if (!email) {
+    if (!vendormail) {
       return res.status(400).json({ message: 'Email is required' });
     }
 
     // Check if makerspace with same email already exists
     const existingMakerspace = await mongoose.connection.db
-      .collection('test')
-      .findOne({ email });
+      .collection('makerspaces')
+      .findOne({ vendormail });
 
     if (existingMakerspace) {
       return res
@@ -27,25 +27,26 @@ router.post('/onboard', async (req, res) => {
     }
 
     // Generate JWT token with email
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ vendormail }, process.env.JWT_SECRET, {
       expiresIn: '24h',
     });
 
     // Create new makerspace with pending status
     const newMakerspace = {
       token,
-      email,
+      vendormail,
       status: 'pending',
     };
 
-    await mongoose.connection.db.collection('test').insertOne(newMakerspace);
-    res.status(201).json({ token });
+    await mongoose.connection.db
+      .collection('makerspaces')
+      .insertOne(newMakerspace);
+    res.status(200).json({ token });
   } catch (error) {
     console.error('Check email error:', error);
     res.status(500).json({ message: 'Error checking email' });
   }
 });
-
 
 // Verify makerspace token
 router.get('/verify/:token', async (req, res) => {
@@ -58,7 +59,7 @@ router.get('/verify/:token', async (req, res) => {
 
     // Find makerspace with the provided token
     const makerspace = await mongoose.connection.db
-      .collection('test')
+      .collection('makerspaces')
       .findOne({ token });
 
     if (!makerspace) {
@@ -71,7 +72,7 @@ router.get('/verify/:token', async (req, res) => {
     res.json({
       message: 'Token verified successfully',
       isValid: true,
-      email: makerspace.email,
+      email: makerspace.vendormail,
     });
   } catch (error) {
     console.error('Token verification error:', error);
@@ -103,12 +104,12 @@ router.post('/', verifyToken, async (req, res) => {
     } = req.body;
 
     // Email from the JWT token (added by verifyToken middleware)
-    const tokenEmail = req.user.email;
+    const tokenEmail = req.user.vendormail;
 
     // Find pending makerspace with matching email
     const existingMakerspace = await mongoose.connection.db
-      .collection('test')
-      .findOne({ email: tokenEmail, status: 'pending' });
+      .collection('makerspaces')
+      .findOne({ vendormail: tokenEmail, status: 'pending' });
 
     if (!existingMakerspace) {
       return res
@@ -179,7 +180,6 @@ router.post('/', verifyToken, async (req, res) => {
 
     // Create new makerspace object
     const newMakerspace = {
-      id: uuidv4(),
       type,
       usage,
       name,
@@ -200,40 +200,73 @@ router.post('/', verifyToken, async (req, res) => {
       status: 'inactive',
     };
 
-    // Replace the existing pending makerspace
-    await mongoose.connection.db
-      .collection('test')
-      .findOneAndReplace({ email: tokenEmail }, newMakerspace);
+    const result = await mongoose.connection.db
+      .collection('makerspaces')
+      .updateOne(
+        { vendormail: tokenEmail, status: 'pending' },
+        {
+          $unset: { token: '' },
+          $set: { ...newMakerspace },
+        }
+      );
 
-    res.status(201).json(newMakerspace);
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Makerspace not found' });
+    }
+
+    const updatedMakerspace = await mongoose.connection.db
+      .collection('makerspaces')
+      .findOne({ vendormail: tokenEmail });
+
+    res.status(200).json(updatedMakerspace);
   } catch (error) {
-    console.error('Create makerspace error:', error);
+    console.log('Create makerspace error:', error);
     res.status(500).json({ message: 'Error creating makerspace' });
   }
 });
 
+// Get makerspace by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const makerspace = await mongoose.connection.db
+      .collection('makerspaces')
+      .findOne({ _id: id });
+
+    if (!makerspace) {
+      return res.status(404).json({ message: 'Makerspace not found' });
+    }
+
+    res.json(makerspace);
+  } catch (error) {
+    console.error('Get makerspace by ID error:', error);
+    res.status(500).json({ message: 'Error retrieving makerspace' });
+  }
+});
+
 // Update makerspace
-router.put('/:id', verifyToken, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
 
     const result = await mongoose.connection.db
-      .collection('test')
+      .collection('makerspaces')
       .findOneAndUpdate(
-        { id },
-        { $set: { ...updateData, id } },
+        { _id: new mongoose.Types.ObjectId(id) },
+        { $set: { ...updateData, _id: new mongoose.Types.ObjectId(id) } },
         { returnDocument: 'after' }
       );
 
-    if (!result.value) {
+    if (!result) {
       return res.status(404).json({ message: 'Makerspace not found' });
     }
 
-    res.json(result.value);
+    res.json(result);
   } catch (error) {
     console.error('Update makerspace error:', error);
-    res.status(500).json({ message: 'Error updating makerspace' });
+    res.status(500).json({ message: `Error updating makerspace ${error}` });
   }
 });
 
@@ -253,26 +286,6 @@ router.get('/by-name/:name', async (req, res) => {
     res.json(makerspace);
   } catch (error) {
     console.error('Get makerspace by name error:', error);
-    res.status(500).json({ message: 'Error retrieving makerspace' });
-  }
-});
-
-// Get makerspace by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const makerspace = await mongoose.connection.db
-      .collection('test')
-      .findOne({ id });
-
-    if (!makerspace) {
-      return res.status(404).json({ message: 'Makerspace not found' });
-    }
-
-    res.json(makerspace);
-  } catch (error) {
-    console.error('Get makerspace by ID error:', error);
     res.status(500).json({ message: 'Error retrieving makerspace' });
   }
 });

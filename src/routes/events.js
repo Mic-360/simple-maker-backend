@@ -76,6 +76,7 @@ router.post('/', verifyToken, async (req, res) => {
       location,
       experts,
       makerSpace,
+      status,
     } = req.body;
 
     // Validate required fields
@@ -98,7 +99,6 @@ router.post('/', verifyToken, async (req, res) => {
     }
 
     const newEvent = {
-      id: uuidv4(),
       name,
       category,
       date: {
@@ -121,11 +121,11 @@ router.post('/', verifyToken, async (req, res) => {
       location,
       experts,
       makerSpace,
-      status: 'inactive',
+      status: status ||'inactive',
     };
 
     await mongoose.connection.db.collection('even').insertOne(newEvent);
-    res.status(201).json(newEvent);
+    res.status(200).json(newEvent);
   } catch (error) {
     console.error('Create event error:', error);
     res.status(500).json({ message: 'Error creating event' });

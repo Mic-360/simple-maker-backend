@@ -68,6 +68,7 @@ router.post('/', verifyToken, async (req, res) => {
       instruction,
       inCharge,
       makerSpace,
+      status,
     } = req.body;
 
     // Validate required fields
@@ -90,7 +91,6 @@ router.post('/', verifyToken, async (req, res) => {
     }
 
     const newMachine = {
-      id: uuidv4(),
       category,
       brand,
       model,
@@ -102,12 +102,12 @@ router.post('/', verifyToken, async (req, res) => {
       instruction: instruction || null,
       inCharge: inCharge || [],
       makerSpace,
-      status: 'inactive',
+      status: status ||'inactive',
       rating: 4.5,
     };
 
     await mongoose.connection.db.collection('mac').insertOne(newMachine);
-    res.status(201).json(newMachine);
+    res.status(200).json(newMachine);
   } catch (error) {
     console.error('Create machine error:', error);
     res.status(500).json({ message: 'Error creating machine' });

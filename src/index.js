@@ -21,17 +21,17 @@ mongoose
     const collections = await db.listCollections().toArray();
     const collectionNames = collections.map((col) => col.name);
 
-    if (!collectionNames.includes('user')) {
-      await db.createCollection('user');
+    if (!collectionNames.includes('users')) {
+      await db.createCollection('users');
     }
-    if (!collectionNames.includes('mac')) {
-      await db.createCollection('mac');
+    if (!collectionNames.includes('machines')) {
+      await db.createCollection('machines');
     }
-    if (!collectionNames.includes('even')) {
-      await db.createCollection('even');
+    if (!collectionNames.includes('events')) {
+      await db.createCollection('events');
     }
-    if (!collectionNames.includes('test')) {
-      await db.createCollection('test');
+    if (!collectionNames.includes('makerspaces')) {
+      await db.createCollection('makerspaces');
     }
   })
   .catch((error) => {
@@ -69,7 +69,7 @@ app.get('/collections', async (req, res) => {
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/machines', machineRoutes);
-app.use('/api/makerspace', makerspaceRoutes);
+app.use('/api/makerspaces', makerspaceRoutes);
 app.use('/api/events', eventRoutes);
 
 // Basic error handling
