@@ -133,12 +133,12 @@
             }
 
             try {
-                const response = await fetch('http://localhost:5000/api/makerspace/onboard', {
+                const response = await fetch('http://localhost:8080/api/makerspaces/onboard', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email: email })
+                    body: JSON.stringify({ vendormail: email })
                 });
 
                 if (!response.ok) {
@@ -148,7 +148,7 @@
 
                 const data = await response.json();
                 const token = data.token;
-                const onboardingLink = `http://localhost:3000/vendor-space/${token}`;
+                const onboardingLink = `https://makerapp-one.vercel.app/vendor-space/${token}`; // Added https://
                 document.getElementById('onboardingLink').value = onboardingLink;
                 document.getElementById('linkDisplay').style.display = 'block';
             } catch (error) {
